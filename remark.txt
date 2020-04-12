@@ -1,0 +1,30 @@
+// 原生SQL使用
+$sql = "insert into t_test (name) values ('aaa')";
+$result = $pdo->exec($sql);
+$lastID = $pdo->lastInsertId();
+return [
+    'result' => $result,
+    'lastid' => $lastID
+];   
+
+$sql = "select * from t_test";
+$result = $pdo->query($sql)->fetchAll(\PDO::FETCH_NAMED);
+return $result;
+
+
+http://petstore.swagger.io/?url=http://api.mu78.local:8080/docs/swagger.json
+
+
+// 修改swagger return 字符串转返回值
+// vendor/caoym/phpboot/src/Docgen/Swagger/Swagger.php  #209
+if(strpos($schema->description, 'json:') === 0){                    
+    $schema->schema->type = substr($schema->description, 5);
+    $schema->description = 'json';
+}
+
+// 批量更新用户发布文章数
+update t_users_attr t1 set t1.articles = (
+	select cnt from (
+		select authorId, count(1) as cnt from t_articles where `status` = 2 group by authorId 
+	) t2 where t1.uid = t2.authorId
+)
